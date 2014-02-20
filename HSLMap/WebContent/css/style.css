@@ -1,19 +1,19 @@
-#console {
+#output {
   border: 1px solid black;
   min-height: 100px;
 }
 
-/* #map { */
-/*   height: 600px; */
-/*   width: 800px; */
-/*   position:absolute; */
+#map {
+  height: 100%; 
+  width: 100%; 
+  position:absolute; 
 /*   top:0; */
 /*   bottom:0; */
 /*   right:0; */
 /*   left:0; */
-/* } */
+}
 
-/* body { margin: 0; } */
+body { margin: 0; } 
 
 /* #start { */
 /*   position: absolute; */
@@ -22,7 +22,7 @@
 /*   font-size: 40px */
 /* } */
 
-/* /* All of this is from cibi.me */ */
+/* All of this is from cibi.me */
 
 /* #branding { */
 /*   height: 0; */
@@ -86,31 +86,31 @@
 /*   min-width: 163px; */
 /* } */
 
-/* /* Navigation: Main Menu */ */
-/* #main-menu { */
-/*   padding: .25em; */
-/*   float: right; */
-/* } */
-/* #main-menu li { */
-/*   float: left; */
-/* } */
-/* #main-menu a { */
-/*   display: block; */
-/*   color: #fff; */
-/*   font-size: 1em; */
-/*   font-weight: bold; */
-/*   line-height: 1.75; */
-/*   text-decoration: none; */
-/*   padding: 0 0.75em; */
-/*   position: relative; */
-/*   z-index: 1000; */
-/*   -webkit-border-radius: 3px; */
-/*      -moz-border-radius: 3px; */
-/*           border-radius: 3px; */
-/* } */
-/* #main-menu a:hover { */
-/*   background-color: #333; */
-/* } */
+/* Navigation: Main Menu */
+#main-menu {
+  padding: .25em;
+  float: right;
+}
+#main-menu li {
+  float: left;
+}
+#main-menu a {
+  display: block;
+  color: #fff;
+  font-size: 1em;
+  font-weight: bold;
+  line-height: 1.75;
+  text-decoration: none;
+  padding: 0 0.75em;
+  position: relative;
+  z-index: 1000;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+#main-menu a:hover {
+  background-color: #333;
+}
 
 /* /* Location Search Form */ */
 /* #branding .search { */
@@ -144,7 +144,7 @@
 /* #branding .search :-moz-placeholder { color: #777; } */
 
 
-/* @media only screen and (min-width: 768px) { */
+@media only screen and (min-width: 768px) {
 /*   #logo { */
 /*     right: 0; */
 /*     top: 2em; */
@@ -161,11 +161,11 @@
 /*     font-size: 1.25em; */
 /*   } */
 
-/*   Map UI */
-/*   .leaflet-control-zoom { */
-/*     display: block; */
-/*   } */
-/*   .leaflet-container .leaflet-control-attribution { */
-/*     font-size: 10px; */
-/*   } */
-/* } */
+  Map UI
+  .leaflet-control-zoom {
+    display: block;
+  }
+  .leaflet-container .leaflet-control-attribution {
+    font-size: 10px;
+  }
+}

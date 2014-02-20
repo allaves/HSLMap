@@ -19,22 +19,18 @@ var busIcon = L.icon({
 	shadowUrl: null
 });
 
-// Map config
-var config = {
-	tileUrl : 'http://{s}.tile.cloudmade.com/9005e2b5656c41a1ba9ee9c775de19a1/997/256/{z}/{x}/{y}.png',
-	//overlayTileUrl : 'http://{s}.tiles.mapbox.com/v3/intertwine.nyc_bike_overlay/{z}/{x}/{y}.png',
-    tileAttrib : 'Routing powered by <a href="http://live.mattersoft.fi/hsl/defaultEn.aspx">HSL LIVE</a>, Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-    initLatLng : new L.LatLng(60.1708, 24.9375), // Helsinki
-    initZoom : 12,
-    minZoom : 10,
-    maxZoom : 17
-};
+// Map centered in Helsinki with initial zoom set to 13
+var map = L.map('map').setView([60.1708, 24.9375], 13);
 
-// Map
-var map = L.map('map', {minZoom: config.minZoom, maxZoom: config.maxZoom});
+// Layer from OpenStreetMaps
+L.tileLayer('http://{s}.tile.cloudmade.com/9005e2b5656c41a1ba9ee9c775de19a1/997/256/{z}/{x}/{y}.png', {
+	attribution: 'Routing powered by <a href="http://live.mattersoft.fi/hsl/defaultEn.aspx">HSL LIVE</a>, Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy <a href="http://cloudmade.com">CloudMade</a>',
+	maxZoom: 18
+}).addTo(map);
 
 // Vehicle hashmap that stores {vehicleId, polyline}
-var vehicleHashMap = {};
+var polylineHashMap = {};
+var markerHashMap = {}
 
 // What happens when the route of a marker ends?
 function on_marker_end() {
@@ -47,9 +43,6 @@ function on_marker_end() {
 window.onload = function() {
 	// RabbitMQ connection
 	client.connect(user, pass, on_connect, on_error, vhost);
-	// Initialize map
-	map.addLayer(new L.TileLayer(config.tileUrl, {attribution: config.tileAttrib}));
-	map.setView(config.initLatLng, config.initZoom);
 	// Get map from index.html
 	output = document.getElementById('map');
 };
@@ -64,16 +57,19 @@ var on_error = function() {
 	output.innerHTML += 'Connection failed!<br />';
 };
 
-var auxArray;
-var auxId;
+var hslObs;
+var vehicleId;
 
 var on_message = function(msg) {
 	// Get vehicleId
 	hslObs = msg.body.split(" ");
-	vehicleId = auxArray[0];
+	vehicleId = hslObs[0];
 	// If vehicleId is in the list, ...
-	if (auxId in vehicleHashMap) {
-		// TODO
+	if (vehicleId in markerHashMap) {
+		// add the new points to the corresponding array
+		polylineHashMap[vehicleId].addLatLng(new L.LatLng(hslObs[1], hslObs[2]));
+		// Set the new polyline to the marker
+		markerHashMap[vehicleId].setLine(polylineHashMap[vehicleId]);
 	}
 	// else, create a new marker located at the corresponding coordinates
 	else {
@@ -82,9 +78,12 @@ var on_message = function(msg) {
 			autoStart: true,
 			onEnd: on_marker_end
 		});
+		markerHashMap[vehicleId] = marker;
+		map.addLayer(marker);
+		marker.start();
 	}
 	
-	output.innerHTML += msg.body + '<br />';
+	//output.innerHTML += msg.body + '<br />';
 };
 
 
