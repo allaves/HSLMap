@@ -28,9 +28,9 @@ L.tileLayer('http://{s}.tile.cloudmade.com/9005e2b5656c41a1ba9ee9c775de19a1/997/
 	maxZoom: 18
 }).addTo(map);
 
-// Vehicle hashmap that stores {vehicleId, polyline}
+// polyline and marker hashmaps 
 var polylineHashMap = {};
-var markerHashMap = {}
+var markerHashMap = {};
 
 // What happens when the route of a marker ends?
 function on_marker_end() {
@@ -44,46 +44,51 @@ window.onload = function() {
 	// RabbitMQ connection
 	client.connect(user, pass, on_connect, on_error, vhost);
 	// Get map from index.html
-	output = document.getElementById('map');
+	//map = document.getElementById('map');
 };
 
 var on_connect = function() {
-	output.innerHTML += 'Connected to RabbitMQ-Web-Stomp<br />';
+	this.debug('Connected to RabbitMQ-Web-Stomp');
     console.log(client);
     client.subscribe(queue, on_message);
 };
 
 var on_error = function() {
-	output.innerHTML += 'Connection failed!<br />';
+	//output.innerHTML += 'Connection failed!<br />';
+	this.debug('Connection failed!');
 };
 
-var hslObs;
-var vehicleId;
+var hslObs, vehicleId, lat, lon;
+
 
 var on_message = function(msg) {
 	// Get vehicleId
 	hslObs = msg.body.split(" ");
 	vehicleId = hslObs[0];
+	lat = parseInt(hslObs[1]);
+	lon = parseInt(hslObs[2]);
 	// If vehicleId is in the list, ...
 	if (vehicleId in markerHashMap) {
 		// add the new points to the corresponding array
-		polylineHashMap[vehicleId].addLatLng(new L.LatLng(hslObs[1], hslObs[2]));
+		polylineHashMap[vehicleId].addLatLng(new L.LatLng(lon, lat));
+		console.log(polylineHashMap[vehicleId]);
 		// Set the new polyline to the marker
 		markerHashMap[vehicleId].setLine(polylineHashMap[vehicleId]);
 	}
 	// else, create a new marker located at the corresponding coordinates
 	else {
-		var marker = new L.animatedMarker(new L.LatLng(hslObs[1], hslObs[2]), {
+		var line = L.polyline([[lon, lat], [lon, lat]]);
+		var marker = L.animatedMarker(line.getLatLngs(), {
 			icon: busIcon,
-			autoStart: true,
-			onEnd: on_marker_end
+			autoStart: false,
+			onEnd: on_marker_end,
 		});
+		polylineHashMap[vehicleId] = line;
 		markerHashMap[vehicleId] = marker;
 		map.addLayer(marker);
 		marker.start();
 	}
 	
-	//output.innerHTML += msg.body + '<br />';
 };
 
 
