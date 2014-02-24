@@ -65,28 +65,46 @@ var on_message = function(msg) {
 	// Get vehicleId
 	hslObs = msg.body.split(" ");
 	vehicleId = hslObs[0];
-	lat = parseInt(hslObs[1]);
-	lon = parseInt(hslObs[2]);
+	lat = parseFloat(hslObs[1]);
+	lon = parseFloat(hslObs[2]);
 	// If vehicleId is in the list, ...
 	if (vehicleId in markerHashMap) {
+		console.log("vehicleId in markerHashMap!");
 		// add the new points to the corresponding array
-		polylineHashMap[vehicleId].addLatLng(new L.LatLng(lon, lat));
-		console.log(polylineHashMap[vehicleId]);
+		//polylineHashMap[vehicleId].addLatLng(new L.LatLng(lon, lat));
+		//console.log(polylineHashMap[vehicleId]);
 		// Set the new polyline to the marker
-		markerHashMap[vehicleId].setLine(polylineHashMap[vehicleId]);
+		//markerHashMap[vehicleId].setLine(polylineHashMap[vehicleId]);
+		markerHashMap[vehicleId].addLatLng(new L.LatLng(lon, lat));
+		console.log(markerHashMap[vehicleId]);
+		
+		// Start the marker movement after having 3 points
+		if (polylineHashMap[vehicleId].getLatLngs().length == 4) {
+			map.addLayer(markerHashMap[vehicleId]);	
+			//markerHashMap[vehicleId].start();
+		}
+//		else {
+//			markerHashMap[vehicleId].start();
+//		} 
 	}
 	// else, create a new marker located at the corresponding coordinates
 	else {
-		var line = L.polyline([[lon, lat], [lon, lat]]);
+		console.log("vehicleId NOT in markerHashMap!");
+		var line = L.polyline([[lon, lat], [lon, lat]]); 
+		//var line = L.polyline([[60.167393, 24.961866], [60.167456, 24.961957], [60.167487, 24.962011], [60.167548, 24.962109], [60.167571 ,24.962175], [60.167587 ,24.962235]]);
+		console.log(line);
 		var marker = L.animatedMarker(line.getLatLngs(), {
 			icon: busIcon,
-			autoStart: false,
-			onEnd: on_marker_end,
+			autoStart: true,
+			//onEnd: on_marker_end,
+			//distance: 200, // meters
+			//interval: 2000, // milliseconds
 		});
+		console.log(marker);
 		polylineHashMap[vehicleId] = line;
 		markerHashMap[vehicleId] = marker;
 		map.addLayer(marker);
-		marker.start();
+		//marker.start();
 	}
 	
 };

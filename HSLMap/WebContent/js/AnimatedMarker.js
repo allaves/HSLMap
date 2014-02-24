@@ -111,6 +111,13 @@ L.AnimatedMarker = L.Marker.extend({
       this.options.interval = 30;
     }
     this._i = 1;
+  },
+  
+  // Adds a point to the polyline dynamically
+  addLatLng: function(latlng) {
+	  this._latlngs.push(latlng);
+	  this._latlngs = this._chunk(this._latlngs);
+	  this.animate();
   }
 
 });
