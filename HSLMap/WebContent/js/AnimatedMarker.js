@@ -78,7 +78,7 @@ L.AnimatedMarker = L.Marker.extend({
     this.setLatLng(this._latlngs[this._i]);
     this._i++;
 
-    // Queue up the animation to the next next vertex
+    // Queue up the animation to the next vertex
     this._tid = setTimeout(function(){
       if (self._i === len) {
         self.options.onEnd.apply(self, Array.prototype.slice.call(arguments));
@@ -116,7 +116,7 @@ L.AnimatedMarker = L.Marker.extend({
   // Adds a point to the polyline dynamically
   addLatLng: function(latlng) {
 	  this._latlngs.push(latlng);
-	  this._latlngs = this._chunk(this._latlngs);
+	  //this._latlngs = this._chunk(this._latlngs);
 	  this.animate();
   }
 
